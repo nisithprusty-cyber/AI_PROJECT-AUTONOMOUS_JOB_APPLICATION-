@@ -1,0 +1,208 @@
+{
+  "info": {
+    "name": "ApplyGenius API",
+    "description": "Autonomous Job Application Agent — API Test Collection\n\nBase URL: http://localhost:5000\n\nUsage:\n1. Start backend: python backend/app.py\n2. Import this file into Postman\n3. Run requests in order: Health → Analyze → Generate → Download",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "session_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Check if the API server is running."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\"status\": \"ok\", \"message\": \"Autonomous Job Agent API is running\"}"
+        }
+      ]
+    },
+    {
+      "name": "2. Analyze Resume + Job",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "name", "value": "Arjun Sharma", "type": "text" },
+            { "key": "email", "value": "arjun@example.com", "type": "text" },
+            { "key": "phone", "value": "+91 98765 43210", "type": "text" },
+            { "key": "address", "value": "Bengaluru, Karnataka", "type": "text" },
+            { "key": "linkedin", "value": "https://linkedin.com/in/arjun", "type": "text" },
+            { "key": "portfolio", "value": "https://github.com/arjun", "type": "text" },
+            { "key": "job_url", "value": "https://www.linkedin.com/jobs/view/3862345678", "type": "text" },
+            { "key": "job_description", "value": "We are looking for a Senior Python Developer with experience in Django, FastAPI, PostgreSQL, Docker, and AWS. Must have 3+ years of experience in backend development.", "type": "text" },
+            { "key": "resume", "src": "/path/to/your/resume.pdf", "type": "file" }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "analyze"]
+        },
+        "description": "Main analysis endpoint. Upload resume PDF + job URL/description.\n\nSave the returned `session_id` for subsequent requests."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if (json.session_id) {",
+              "    pm.collectionVariables.set('session_id', json.session_id);",
+              "    console.log('Session ID saved:', json.session_id);",
+              "}",
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Has match_score', () => pm.expect(json).to.have.property('match_score'));",
+              "pm.test('Has matched_skills', () => pm.expect(json.matched_skills).to.be.an('array'));",
+              "pm.test('Has missing_skills', () => pm.expect(json.missing_skills).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Generate Cover Letter Text",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"personal_info\": {\n    \"name\": \"Arjun Sharma\",\n    \"email\": \"arjun@example.com\",\n    \"phone\": \"+91 98765 43210\"\n  },\n  \"job_data\": {\n    \"title\": \"Senior Python Developer\",\n    \"company\": \"TechCorp\",\n    \"url\": \"https://example.com/jobs/123\",\n    \"raw_description\": \"Looking for Python developer with Django, PostgreSQL, Docker skills.\"\n  },\n  \"analysis\": {\n    \"matched_skills\": [\"Python\", \"Django\", \"PostgreSQL\"],\n    \"missing_skills\": [\"Docker\", \"AWS\"],\n    \"match_score\": 78,\n    \"summary\": \"Strong backend developer with relevant Python experience.\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/cover-letter-text",
+          "host": ["{{base_url}}"],
+          "path": ["api", "cover-letter-text"]
+        },
+        "description": "Generate cover letter text for preview before PDF creation."
+      }
+    },
+    {
+      "name": "4. Generate PDFs",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"session_id\": \"{{session_id}}\",\n  \"personal_info\": {\n    \"name\": \"Arjun Sharma\",\n    \"email\": \"arjun@example.com\",\n    \"phone\": \"+91 98765 43210\",\n    \"address\": \"Bengaluru, Karnataka\",\n    \"linkedin\": \"https://linkedin.com/in/arjun\"\n  },\n  \"job_data\": {\n    \"title\": \"Senior Python Developer\",\n    \"company\": \"TechCorp\",\n    \"url\": \"https://example.com/jobs/123\",\n    \"raw_description\": \"Looking for experienced Python developer.\"\n  },\n  \"analysis\": {\n    \"matched_skills\": [\"Python\", \"Django\", \"PostgreSQL\", \"REST APIs\", \"Git\"],\n    \"missing_skills\": [\"Docker\", \"Kubernetes\", \"AWS\"],\n    \"match_score\": 78,\n    \"summary\": \"Strong backend developer profile with relevant experience.\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/generate",
+          "host": ["{{base_url}}"],
+          "path": ["api", "generate"]
+        },
+        "description": "Generate tailored resume PDF + cover letter PDF.\nOnly call this when match_score >= 70."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Has resume_pdf link', () => pm.expect(json).to.have.property('resume_pdf'));",
+              "pm.test('Has cover_letter_pdf link', () => pm.expect(json).to.have.property('cover_letter_pdf'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Download Resume PDF",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/download/{{session_id}}_resume.pdf",
+          "host": ["{{base_url}}"],
+          "path": ["api", "download", "{{session_id}}_resume.pdf"]
+        },
+        "description": "Download the generated tailored resume PDF."
+      }
+    },
+    {
+      "name": "6. Download Cover Letter PDF",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/download/{{session_id}}_cover_letter.pdf",
+          "host": ["{{base_url}}"],
+          "path": ["api", "download", "{{session_id}}_cover_letter.pdf"]
+        },
+        "description": "Download the generated cover letter PDF."
+      }
+    },
+    {
+      "name": "7. Send Confirmation Email",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"arjun@example.com\",\n  \"name\": \"Arjun Sharma\",\n  \"job_title\": \"Senior Python Developer\",\n  \"company\": \"TechCorp\",\n  \"job_url\": \"https://example.com/jobs/123\",\n  \"session_id\": \"{{session_id}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-confirmation",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-confirmation"]
+        },
+        "description": "Send confirmation email to candidate and update status in Google Sheets."
+      }
+    },
+    {
+      "name": "8. Get All Applications (Dashboard)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/applications",
+          "host": ["{{base_url}}"],
+          "path": ["api", "applications"]
+        },
+        "description": "Fetch all applications from Google Sheets for the dashboard."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Has applications array', () => pm.expect(json.applications).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
