@@ -1,0 +1,34 @@
+flask
+flask-cors
+python-dotenv
+
+# PDF parsing
+PyMuPDF
+
+# Web scraping
+requests
+beautifulsoup4
+lxml
+playwright
+
+# LangChain + AI
+langchain
+langchain-community
+langchain-openai
+langchain-core
+openai
+
+# Embeddings (local, no API needed)
+sentence-transformers
+faiss-cpu
+
+# PDF generation
+reportlab
+
+# Google Sheets
+gspread
+google-auth
+google-auth-oauthlib
+
+# Utilities
+httpx

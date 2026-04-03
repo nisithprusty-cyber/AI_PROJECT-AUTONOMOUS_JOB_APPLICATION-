@@ -1,0 +1,120 @@
+# Google Sheets + NVIDIA API Setup Guide
+
+## ═══════════════════════════════════════
+## STEP 1: Get Free NVIDIA NIM API Key
+## ═══════════════════════════════════════
+
+1. Open: https://build.nvidia.com
+2. Click "Sign In" or "Get Started" (top right)
+3. Create a free account (email or GitHub login)
+4. Once logged in, go to: https://build.nvidia.com/settings/api-keys
+5. Click "Generate API Key"
+6. Copy the key (starts with "nvapi-...")
+7. Paste into backend/.env:
+   NVIDIA_API_KEY=nvapi-xxxxxxxxxxxxxxxxxxxx
+
+FREE TIER LIMITS:
+  - 40 requests per second
+  - Model: meta/llama-3.1-70b-instruct
+  - No credit card required
+
+
+## ═══════════════════════════════════════
+## STEP 2: Create Google Sheet
+## ═══════════════════════════════════════
+
+1. Go to https://sheets.google.com
+2. Click "+" (New Spreadsheet)
+3. Name it "Job Applications Tracker"
+4. Look at the URL — copy the Sheet ID:
+   URL format: https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit
+   Example ID: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms
+
+5. Paste into backend/.env:
+   GOOGLE_SHEETS_ID=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms
+
+
+## ═══════════════════════════════════════
+## STEP 3: Create Service Account (Free)
+## ═══════════════════════════════════════
+
+1. Go to: https://console.cloud.google.com
+2. Click "Select a project" → "New Project"
+3. Name: "ApplyGenius" → Create
+
+4. Enable APIs:
+   - Go to "APIs & Services" → "Library"
+   - Search "Google Sheets API" → Enable
+   - Search "Google Drive API" → Enable
+
+5. Create Service Account:
+   - Go to "APIs & Services" → "Credentials"
+   - Click "Create Credentials" → "Service Account"
+   - Name: "applygenius-bot"
+   - Click "Done"
+
+6. Generate JSON Key:
+   - Click on your service account (in the list)
+   - Go to "Keys" tab
+   - Click "Add Key" → "Create new key"
+   - Choose "JSON" format → Create
+   - A .json file downloads automatically
+
+7. Save the file:
+   - Rename it to "credentials.json"
+   - Place it in the "backend/" folder
+   - Your path: autonomous-job-agent/backend/credentials.json
+
+8. Share your Google Sheet with the service account:
+   - Open your Google Sheet from Step 2
+   - Click "Share" (top right)
+   - Paste the service account email (looks like: applygenius-bot@your-project.iam.gserviceaccount.com)
+   - Grant "Editor" access
+   - Click "Send"
+
+   (Find the email in: Cloud Console → IAM → Service Accounts)
+
+
+## ═══════════════════════════════════════
+## STEP 4: Gmail App Password (Optional)
+## ═══════════════════════════════════════
+
+For confirmation emails to work:
+
+1. Go to your Google Account: https://myaccount.google.com
+2. Security → 2-Step Verification (must be enabled first)
+3. Security → App Passwords (scroll down)
+4. Select App: "Mail" / Device: "Other" → name it "ApplyGenius"
+5. Click "Generate"
+6. Copy the 16-character password (e.g., "abcd efgh ijkl mnop")
+
+7. Add to backend/.env:
+   EMAIL_SENDER=yourname@gmail.com
+   EMAIL_APP_PASSWORD=abcdefghijklmnop
+   (Remove spaces from the password)
+
+
+## ═══════════════════════════════════════
+## FINAL .env FILE SHOULD LOOK LIKE:
+## ═══════════════════════════════════════
+
+NVIDIA_API_KEY=nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GOOGLE_SHEETS_ID=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms
+GOOGLE_CREDENTIALS_FILE=credentials.json
+EMAIL_SENDER=yourname@gmail.com
+EMAIL_APP_PASSWORD=abcdefghijklmnop
+
+
+## ═══════════════════════════════════════
+## VERIFY SETUP
+## ═══════════════════════════════════════
+
+Run this to check all services are configured:
+
+  cd backend
+  python config.py
+
+You should see:
+  ✅ nvidia_api
+  ✅ google_sheets
+  ✅ email
