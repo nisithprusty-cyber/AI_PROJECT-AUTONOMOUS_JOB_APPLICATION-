@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ApplyGenius — System Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #080814;
+  font-family: 'DM Mono', monospace;
+  color: #c8c8e8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #f0f0ff;
+  margin-bottom: 6px;
+  text-align: center;
+}
+.subtitle {
+  font-size: 13px;
+  color: #5a5a8a;
+  margin-bottom: 40px;
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.diagram {
+  width: 100%;
+  max-width: 960px;
+  background: #0d0d1e;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 0 80px rgba(255,77,109,0.05), 0 20px 60px rgba(0,0,0,0.5);
+}
+svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+</style>
+</head>
+<body>
+<h1>ApplyGenius</h1>
+<p class="subtitle">System Architecture · Autonomous Job Application Agent</p>
+
+<div class="diagram">
+<svg viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d6d"/>
+      <stop offset="100%" stop-color="#ff8c42"/>
+    </linearGradient>
+    <linearGradient id="gBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4da6ff"/>
+      <stop offset="100%" stop-color="#7b61ff"/>
+    </linearGradient>
+    <linearGradient id="gGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2eca7f"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="gPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#3a3a5a"/>
+    </marker>
+    <marker id="arrowAccent" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#ff4d6d"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#2eca7f"/>
+    </marker>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ===== BACKGROUND SECTIONS ===== -->
+  <!-- Input Zone -->
+  <rect x="10" y="10" width="180" height="600" rx="14" fill="rgba(255,77,109,0.04)" stroke="rgba(255,77,109,0.12)" stroke-width="1"/>
+  <text x="100" y="32" text-anchor="middle" font-size="10" fill="#ff4d6d" font-family="DM Mono" letter-spacing="2">INPUT</text>
+
+  <!-- Backend Zone -->
+  <rect x="210" y="10" width="460" height="600" rx="14" fill="rgba(77,166,255,0.03)" stroke="rgba(77,166,255,0.1)" stroke-width="1"/>
+  <text x="440" y="32" text-anchor="middle" font-size="10" fill="#4da6ff" font-family="DM Mono" letter-spacing="2">BACKEND · FLASK API</text>
+
+  <!-- Output Zone -->
+  <rect x="690" y="10" width="180" height="600" rx="14" fill="rgba(46,202,127,0.04)" stroke="rgba(46,202,127,0.12)" stroke-width="1"/>
+  <text x="780" y="32" text-anchor="middle" font-size="10" fill="#2eca7f" font-family="DM Mono" letter-spacing="2">OUTPUT</text>
+
+  <!-- ===== INPUT BOXES ===== -->
+  <!-- Resume PDF -->
+  <rect x="25" y="55" width="150" height="56" rx="10" fill="#1a0f1f" stroke="rgba(255,77,109,0.4)" stroke-width="1.5"/>
+  <text x="100" y="76" text-anchor="middle" font-size="20" fill="#ff4d6d">📄</text>
+  <text x="100" y="95" text-anchor="middle" font-size="11" font-weight="600" fill="#f0f0f5" font-family="Syne, sans-serif">Resume PDF</text>
+  <text x="100" y="107" text-anchor="middle" font-size="9" fill="#6a6a9a" font-family="DM Mono">Master Resume</text>
+
+  <!-- Job URL -->
+  <rect x="25" y="130" width="150" height="56" rx="10" fill="#1a0f1f" stroke="rgba(255,77,109,0.4)" stroke-width="1.5"/>
+  <text x="100" y="151" text-anchor="middle" font-size="20" fill="#ff4d6d">🌐</text>
+  <text x="100" y="170" text-anchor="middle" font-size="11" font-weight="600" fill="#f0f0f5" font-family="Syne, sans-serif">Job URL</text>
+  <text x="100" y="182" text-anchor="middle" font-size="9" fill="#6a6a9a" font-family="DM Mono">LinkedIn / Indeed</text>
+
+  <!-- Personal Info -->
+  <rect x="25" y="205" width="150" height="56" rx="10" fill="#1a0f1f" stroke="rgba(255,77,109,0.4)" stroke-width="1.5"/>
+  <text x="100" y="226" text-anchor="middle" font-size="20" fill="#ff4d6d">👤</text>
+  <text x="100" y="245" text-anchor="middle" font-size="11" font-weight="600" fill="#f0f0f5" font-family="Syne, sans-serif">Personal Info</text>
+  <text x="100" y="257" text-anchor="middle" font-size="9" fill="#6a6a9a" font-family="DM Mono">Name, Email, Phone</text>
+
+  <!-- ===== BACKEND PROCESSING ===== -->
+  <!-- Step 1: Parsers -->
+  <rect x="225" y="55" width="130" height="56" rx="10" fill="#0d1a2e" stroke="rgba(77,166,255,0.35)" stroke-width="1.5"/>
+  <text x="290" y="76" text-anchor="middle" font-size="9" fill="#4da6ff" font-family="DM Mono">STEP 1</text>
+  <text x="290" y="91" text-anchor="middle" font-size="11" font-weight="700" fill="#e8e8ff" font-family="Syne, sans-serif">PyMuPDF</text>
+  <text x="290" y="104" text-anchor="middle" font-size="9" fill="#6a8aaa" font-family="DM Mono">PDF Parser</text>
+
+  <rect x="225" y="130" width="130" height="56" rx="10" fill="#0d1a2e" stroke="rgba(77,166,255,0.35)" stroke-width="1.5"/>
+  <text x="290" y="151" text-anchor="middle" font-size="9" fill="#4da6ff" font-family="DM Mono">STEP 2</text>
+  <text x="290" y="166" text-anchor="middle" font-size="11" font-weight="700" fill="#e8e8ff" font-family="Syne, sans-serif">BeautifulSoup</text>
+  <text x="290" y="179" text-anchor="middle" font-size="9" fill="#6a8aaa" font-family="DM Mono">Web Scraper</text>
+
+  <!-- Step 3: Vector Store -->
+  <rect x="225" y="250" width="130" height="80" rx="10" fill="#0d1a2e" stroke="rgba(167,139,250,0.35)" stroke-width="1.5"/>
+  <text x="290" y="270" text-anchor="middle" font-size="9" fill="#a78bfa" font-family="DM Mono">STEP 3</text>
+  <text x="290" y="285" text-anchor="middle" font-size="11" font-weight="700" fill="#e8e8ff" font-family="Syne, sans-serif">FAISS</text>
+  <text x="290" y="298" text-anchor="middle" font-size="9" fill="#6a8aaa" font-family="DM Mono">Vector Store</text>
+  <text x="290" y="312" text-anchor="middle" font-size="9" fill="#5a5a8a" font-family="DM Mono">MiniLM Embeddings</text>
+  <rect x="235" y="316" width="110" height="8" rx="4" fill="#1e1e3a"/>
+  <rect x="235" y="316" width="75" height="8" rx="4" fill="url(#gPurple)"/>
+
+  <!-- Step 4: ReAct Agent (Center) -->
+  <rect x="380" y="80" width="170" height="180" rx="14" fill="#12122a" stroke="url(#gAccent)" stroke-width="2"/>
+  <text x="465" y="105" text-anchor="middle" font-size="9" fill="#ff4d6d" font-family="DM Mono" letter-spacing="2">STEP 4 · CORE</text>
+  <text x="465" y="123" text-anchor="middle" font-size="14" font-weight="800" fill="#ff6d85" font-family="Syne, sans-serif">ReAct Agent</text>
+  <text x="465" y="139" text-anchor="middle" font-size="9" fill="#6a6a9a" font-family="DM Mono">LangChain + NVIDIA NIM</text>
+  <!-- Agent loop -->
+  <rect x="393" y="150" width="144" height="22" rx="6" fill="#1e1e3e"/>
+  <text x="465" y="165" text-anchor="middle" font-size="9" fill="#a0a0c8" font-family="DM Mono">Thought → Action</text>
+  <rect x="393" y="178" width="144" height="22" rx="6" fill="#1e1e3e"/>
+  <text x="465" y="193" text-anchor="middle" font-size="9" fill="#a0a0c8" font-family="DM Mono">Action → Observation</text>
+  <rect x="393" y="206" width="144" height="22" rx="6" fill="#1e1e3e"/>
+  <text x="465" y="221" text-anchor="middle" font-size="9" fill="#a0a0c8" font-family="DM Mono">Resume Tool / Web Tool</text>
+  <!-- Loop arrow -->
+  <path d="M540,150 Q560,170 540,205" fill="none" stroke="#ff4d6d" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+  <text x="558" y="178" font-size="9" fill="#ff4d6d" font-family="DM Mono" opacity="0.7">loop</text>
+
+  <!-- Step 5: Analysis Output -->
+  <rect x="225" y="385" width="130" height="80" rx="10" fill="#0d1a2e" stroke="rgba(255,179,71,0.35)" stroke-width="1.5"/>
+  <text x="290" y="405" text-anchor="middle" font-size="9" fill="#ffb347" font-family="DM Mono">STEP 5</text>
+  <text x="290" y="420" text-anchor="middle" font-size="11" font-weight="700" fill="#e8e8ff" font-family="Syne, sans-serif">Match Analysis</text>
+  <text x="290" y="433" text-anchor="middle" font-size="9" fill="#6a8aaa" font-family="DM Mono">Score · Skills · Gap</text>
+  <!-- Score bar -->
+  <rect x="235" y="442" width="110" height="8" rx="4" fill="#1e1e3a"/>
+  <rect x="235" y="442" width="82" height="8" rx="4" fill="url(#gAccent)" opacity="0.8"/>
+  <text x="355" y="449" font-size="9" fill="#ffb347" font-family="DM Mono">75%</text>
+
+  <!-- Step 6: PDF Generation -->
+  <rect x="380" y="310" width="170" height="80" rx="10" fill="#0d1a2e" stroke="rgba(46,202,127,0.35)" stroke-width="1.5"/>
+  <text x="465" y="330" text-anchor="middle" font-size="9" fill="#2eca7f" font-family="DM Mono">STEP 6</text>
+  <text x="465" y="345" text-anchor="middle" font-size="11" font-weight="700" fill="#e8e8ff" font-family="Syne, sans-serif">ReportLab</text>
+  <text x="465" y="358" text-anchor="middle" font-size="9" fill="#6a8aaa" font-family="DM Mono">PDF Generator</text>
+  <text x="465" y="372" text-anchor="middle" font-size="9" fill="#5a5a8a" font-family="DM Mono">Resume + Cover Letter</text>
+  <rect x="390" y="378" width="150" height="6" rx="3" fill="#1e1e3a"/>
+  <rect x="390" y="378" width="120" height="6" rx="3" fill="url(#gGreen)" opacity="0.7"/>
+
+  <!-- Step 7: Tracking + Email -->
+  <rect x="380" y="415" width="80" height="70" rx="10" fill="#0d1a2e" stroke="rgba(167,139,250,0.35)" stroke-width="1.5"/>
+  <text x="420" y="434" text-anchor="middle" font-size="18">📊</text>
+  <text x="420" y="452" text-anchor="middle" font-size="10" font-weight="700" fill="#e8e8ff" font-family="Syne, sans-serif">Sheets</text>
+  <text x="420" y="465" text-anchor="middle" font-size="9" fill="#6a8aaa" font-family="DM Mono">Database</text>
+  <text x="420" y="478" text-anchor="middle" font-size="9" fill="#5a5a8a" font-family="DM Mono">gspread</text>
+
+  <rect x="470" y="415" width="80" height="70" rx="10" fill="#0d1a2e" stroke="rgba(77,166,255,0.35)" stroke-width="1.5"/>
+  <text x="510" y="434" text-anchor="middle" font-size="18">📧</text>
+  <text x="510" y="452" text-anchor="middle" font-size="10" font-weight="700" fill="#e8e8ff" font-family="Syne, sans-serif">Gmail</text>
+  <text x="510" y="465" text-anchor="middle" font-size="9" fill="#6a8aaa" font-family="DM Mono">SMTP</text>
+  <text x="510" y="478" text-anchor="middle" font-size="9" fill="#5a5a8a" font-family="DM Mono">Confirmation</text>
+
+  <!-- ===== OUTPUT BOXES ===== -->
+  <!-- Tailored Resume -->
+  <rect x="705" y="55" width="150" height="56" rx="10" fill="#0d2010" stroke="rgba(46,202,127,0.4)" stroke-width="1.5"/>
+  <text x="780" y="76" text-anchor="middle" font-size="20" fill="#2eca7f">📄</text>
+  <text x="780" y="93" text-anchor="middle" font-size="11" font-weight="700" fill="#f0f0f5" font-family="Syne, sans-serif">Tailored Resume</text>
+  <text x="780" y="106" text-anchor="middle" font-size="9" fill="#6a9a7a" font-family="DM Mono">ATS-Optimized PDF</text>
+
+  <!-- Cover Letter -->
+  <rect x="705" y="130" width="150" height="56" rx="10" fill="#0d2010" stroke="rgba(46,202,127,0.4)" stroke-width="1.5"/>
+  <text x="780" y="151" text-anchor="middle" font-size="20" fill="#2eca7f">✉️</text>
+  <text x="780" y="168" text-anchor="middle" font-size="11" font-weight="700" fill="#f0f0f5" font-family="Syne, sans-serif">Cover Letter</text>
+  <text x="780" y="181" text-anchor="middle" font-size="9" fill="#6a9a7a" font-family="DM Mono">Personalized PDF</text>
+
+  <!-- Match Score -->
+  <rect x="705" y="205" width="150" height="56" rx="10" fill="#0d2010" stroke="rgba(46,202,127,0.4)" stroke-width="1.5"/>
+  <text x="780" y="226" text-anchor="middle" font-size="20" fill="#2eca7f">📊</text>
+  <text x="780" y="243" text-anchor="middle" font-size="11" font-weight="700" fill="#f0f0f5" font-family="Syne, sans-serif">Match Score</text>
+  <text x="780" y="256" text-anchor="middle" font-size="9" fill="#6a9a7a" font-family="DM Mono">0–100% ATS Rating</text>
+
+  <!-- Dashboard -->
+  <rect x="705" y="280" width="150" height="56" rx="10" fill="#0d2010" stroke="rgba(46,202,127,0.4)" stroke-width="1.5"/>
+  <text x="780" y="301" text-anchor="middle" font-size="20" fill="#2eca7f">📋</text>
+  <text x="780" y="318" text-anchor="middle" font-size="11" font-weight="700" fill="#f0f0f5" font-family="Syne, sans-serif">Dashboard</text>
+  <text x="780" y="331" text-anchor="middle" font-size="9" fill="#6a9a7a" font-family="DM Mono">Application Tracker</text>
+
+  <!-- Email Confirmation -->
+  <rect x="705" y="355" width="150" height="56" rx="10" fill="#0d2010" stroke="rgba(46,202,127,0.4)" stroke-width="1.5"/>
+  <text x="780" y="376" text-anchor="middle" font-size="20" fill="#2eca7f">✅</text>
+  <text x="780" y="393" text-anchor="middle" font-size="11" font-weight="700" fill="#f0f0f5" font-family="Syne, sans-serif">Confirmation</text>
+  <text x="780" y="406" text-anchor="middle" font-size="9" fill="#6a9a7a" font-family="DM Mono">Email to Candidate</text>
+
+  <!-- ===== ARROWS ===== -->
+  <!-- Input → Parsers -->
+  <line x1="175" y1="83" x2="222" y2="83" stroke="#ff4d6d" stroke-width="1.5" marker-end="url(#arrowAccent)" opacity="0.6"/>
+  <line x1="175" y1="158" x2="222" y2="158" stroke="#ff4d6d" stroke-width="1.5" marker-end="url(#arrowAccent)" opacity="0.6"/>
+
+  <!-- Parsers → Vector Store -->
+  <line x1="290" y1="111" x2="290" y2="247" stroke="#4da6ff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.5"/>
+
+  <!-- Parsers → ReAct Agent -->
+  <line x1="355" y1="83" x2="378" y2="120" stroke="#4da6ff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="355" y1="158" x2="378" y2="145" stroke="#4da6ff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.5"/>
+
+  <!-- Vector Store → ReAct Agent -->
+  <line x1="355" y1="290" x2="378" y2="210" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.5"/>
+
+  <!-- ReAct Agent → Match Analysis -->
+  <line x1="465" y1="260" x2="380" y2="380" stroke="#ffb347" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.5" stroke-dasharray="5,3"/>
+
+  <!-- ReAct Agent → PDF Gen -->
+  <line x1="465" y1="260" x2="465" y2="307" stroke="#2eca7f" stroke-width="1.5" marker-end="url(#arrowGreen)" opacity="0.6"/>
+
+  <!-- PDF Gen → Sheets + Email -->
+  <line x1="420" y1="390" x2="420" y2="412" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.5"/>
+  <line x1="510" y1="390" x2="510" y2="412" stroke="#4da6ff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.5"/>
+
+  <!-- PDF Gen → Output PDFs -->
+  <line x1="550" y1="345" x2="702" y2="88" stroke="#2eca7f" stroke-width="1.5" marker-end="url(#arrowGreen)" opacity="0.4" stroke-dasharray="5,3"/>
+  <line x1="550" y1="355" x2="702" y2="163" stroke="#2eca7f" stroke-width="1.5" marker-end="url(#arrowGreen)" opacity="0.4" stroke-dasharray="5,3"/>
+
+  <!-- Match Analysis → Score output -->
+  <line x1="355" y1="420" x2="702" y2="230" stroke="#ffb347" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.4" stroke-dasharray="5,3"/>
+
+  <!-- Sheets → Dashboard -->
+  <line x1="460" y1="450" x2="702" y2="308" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.4" stroke-dasharray="5,3"/>
+
+  <!-- Email → Confirmation -->
+  <line x1="550" y1="450" x2="702" y2="383" stroke="#4da6ff" stroke-width="1.5" marker-end="url(#arrow)" opacity="0.4" stroke-dasharray="5,3"/>
+
+  <!-- ===== LABELS ===== -->
+  <text x="440" y="560" text-anchor="middle" font-size="10" fill="#3a3a6a" font-family="DM Mono">
+    NVIDIA NIM API · meta/llama-3.1-70b-instruct · 40 req/sec free tier
+  </text>
+  <text x="440" y="578" text-anchor="middle" font-size="10" fill="#3a3a6a" font-family="DM Mono">
+    Google Sheets DB · Gmail SMTP · sentence-transformers/all-MiniLM-L6-v2
+  </text>
+  <text x="440" y="596" text-anchor="middle" font-size="10" fill="#3a3a6a" font-family="DM Mono">
+    Match Score ≥ 70% → Generate + Apply · Match Score &lt; 70% → Skill Gap Resources
+  </text>
+</svg>
+</div>
+
+<p style="text-align:center;margin-top:24px;font-size:11px;color:#3a3a6a;letter-spacing:1px">
+  APPLYGENIUS · AUTONOMOUS JOB APPLICATION AGENT · ARCHITECTURE v1.0
+</p>
+</body>
+</html>
